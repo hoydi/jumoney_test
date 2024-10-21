@@ -39,10 +39,12 @@ let serverObject = { 류트: 42, 하프: 24, 울프: 15, 만돌린: 15 };
 //     console.log(`${instrument}: ${value}`);
 // }
 
+
 ////////////////////////////////////////////////////////////// cell 에 클릭이벤트 넣기
 document.addEventListener("DOMContentLoaded", function () {
   let content = document.getElementById("content");
   let tooltip = document.getElementById("channeling-tooltip");
+
 
   content.addEventListener("click", function (event) {
     let cell = event.target.closest(".cell");
@@ -70,7 +72,8 @@ document.addEventListener("DOMContentLoaded", function () {
           // 사용자가 확인을 눌렀을 때 실행할 코드
           let fatchData = fetchLocationByServers(
             locationName,
-            convertRgbToHex(colors)
+            convertRgbToHex(colors),
+            itemName
           );
         }
       }
@@ -141,16 +144,50 @@ function compareColors(colors, hexColors) {
 
 //아이템리스트 리셋
 function resetItemNameList() {
-  Object.keys(itemNameList).forEach((category) => {
-    itemNameList[category].forEach((entry) => {
-      let itemName = Object.keys(entry)[0]; // 객체의 첫 번째 키 (아이템 이름)
-      entry[itemName] = []; // 해당 아이템의 배열을 빈 배열로 초기화
-    });
-  });
+  itemNameList = {
+    작물: [
+      { "튼튼한 달걀 주머니": [] },
+      { "튼튼한 감자 주머니": [] },
+      { "튼튼한 옥수수 주머니": [] },
+      { "튼튼한 밀 주머니": [] },
+      { "튼튼한 보리 주머니": [] },
+    ],
+    방직: [
+      { "튼튼한 양털 주머니": [] },
+      { "튼튼한 거미줄 주머니": [] },
+      { "튼튼한 가는 실뭉치 주머니": [] },
+      { "튼튼한 굵은 실뭉치 주머니": [] },
+    ],
+    가죽: [
+      { "튼튼한 저가형 가죽 주머니": [] },
+      { "튼튼한 일반 가죽 주머니": [] },
+      { "튼튼한 고급 가죽 주머니": [] },
+      { "튼튼한 최고급 가죽 주머니": [] },
+    ],
+    옷감: [
+      { "튼튼한 저가형 옷감 주머니": [] },
+      { "튼튼한 일반 옷감 주머니": [] },
+      { "튼튼한 고급 옷감 주머니": [] },
+      { "튼튼한 최고급 옷감 주머니": [] },
+    ],
+    실크: [
+      { "튼튼한 저가형 실크 주머니": [] },
+      { "튼튼한 일반 실크 주머니": [] },
+      { "튼튼한 고급 실크 주머니": [] },
+      { "튼튼한 최고급 실크 주머니": [] },
+    ],
+    꽃바구니: [{ "튼튼한 꽃바구니": [] }],
+  };
 }
 
+
 // 특정 location에 대해 서버별 상점 정보를 가져옴)
-async function fetchLocationByServers(targetLocation, hexcolor) {
+async function fetchLocationByServers(
+  targetLocation,
+  hexcolor,
+  itemName
+) {
+  let selectedServer = document.getElementById("serverSelect").value;
   modalBody.innerHTML = `
     <div class="spinner"></div>
     
@@ -173,7 +210,7 @@ async function fetchLocationByServers(targetLocation, hexcolor) {
   }
 
   let npc = locationData.npc;
-  let modalContent = "";
+  let modalContent = `<h2>${selectedServer} ${document.getElementById('channelInput').value} 채널 ${itemName}</h2>`;
 
   // 미리 색상 관련 HTML을 준비
   modalContent += `<div class="modal-color">`;
@@ -191,19 +228,20 @@ async function fetchLocationByServers(targetLocation, hexcolor) {
 
   // 서버 데이터를 가져오고, 모달을 한 번에 업데이트
   for (let [serverName, serverCount] of Object.entries(serverObject)) {
-    let isChannelingServerChecked = document.getElementById("channelingServer").checked;
-  
-  if (isChannelingServerChecked) {
-    // 체크된 경우 serverSelect의 value를 읽어옴
-    let selectedServer = document.getElementById("serverSelect").value;
-    
-    // 선택된 서버 이름을 출력하거나 다른 작업을 수행
-    console.log(`체크박스가 체크되었습니다. 선택된 서버: ${selectedServer} 현재서버: ${serverName}`);
-    if(selectedServer!=serverName){
-      continue;
+    let isChannelingServerChecked =
+      document.getElementById("channelingServer").checked;
+
+    if (isChannelingServerChecked) {
+      // 체크된 경우 serverSelect의 value를 읽어옴
+
+      // 선택된 서버 이름을 출력하거나 다른 작업을 수행
+      console.log(
+        `체크박스가 체크되었습니다. 선택된 서버: ${selectedServer} 현재서버: ${serverName}`
+      );
+      if (selectedServer != serverName) {
+        continue;
+      }
     }
-    
-  }
 
     resetItemNameList();
     modalContent += `<div class="serverName"><h2>${serverName}</h2></div>`;
@@ -312,28 +350,29 @@ document
     document.getElementById("modal").style.display = "block";
   });
 
-
-  // 특정 서버만 채널링할건지 체크 확인
-  document.getElementById("channelingServer").addEventListener("change", function () {
+// 특정 서버만 채널링할건지 체크 확인
+document
+  .getElementById("channelingServer")
+  .addEventListener("change", function () {
     // 체크박스가 체크되었을 때
     if (this.checked) {
       // serverSelect의 value 값을 읽어옴
       let selectedServer = document.getElementById("serverSelect").value;
-      
+
       // 선택된 서버 이름 출력 (또는 원하는 동작 수행)
       console.log("Selected Server:", selectedServer);
-  
+
       // 필터링 등의 추가 동작을 수행할 수 있습니다.
       // applyServerFilter(selectedServer);
     }
   });
 
-  document.getElementById('serverSelect').addEventListener('change', function () {
-    // serverSelect에서 선택된 값을 가져오기
-    const selectedServer = this.value;
-    
-    // tooltiptext를 업데이트
-    const tooltipText = document.getElementById('channelingTooltipText');
-    tooltipText.textContent = `체크시 ${selectedServer} 서버만 채널링합니다`;
-  });
-  
+document.getElementById("serverSelect").addEventListener("change", function () {
+  // serverSelect에서 선택된 값을 가져오기
+  const selectedServer = this.value;
+
+  // tooltiptext를 업데이트
+  const tooltipText = document.getElementById("channelingTooltipText");
+  tooltipText.textContent = `체크시 ${selectedServer} 서버만 채널링합니다`;
+});
+

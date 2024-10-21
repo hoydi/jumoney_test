@@ -7,7 +7,6 @@ const mabibase_jumoney = ["5110005", "5110006","5110007",  "5110008",  "5110009"
 
 const url = "https://open.api.nexon.com/mabinogi/v1/npcshop/list";// API 요청 URL
 
-
 function hexToRgb(hex) {// hex 색상을 RGB로 변환하는 함수
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -190,9 +189,10 @@ document.getElementById("serverSelect").addEventListener("change", function () {
   localStorage.setItem("server", server);
 });
 
-document.getElementById("channelInput").addEventListener("input", function () {
-  const channel = this.value;
-  localStorage.setItem("channel", channel);
+document.getElementById("channelInput").addEventListener("change", function () {
+
+  // console.log(this.value); // 현재 입력값 출력
+  lastNextResetTime = null; // 값이 변경될 때 lastNextResetTime을 null로 설정
 });
 
 
@@ -410,11 +410,7 @@ document.getElementById("locationSelect").addEventListener("change", () => {
   renderData(filteredData);
 });
 
-//채널바꾸면 lastNextResetTime null 만들어서 fetch 되게
-document.getElementById("channelInput").addEventListener("change", function () {
-  console.log('채널변경')
-  lastNextResetTime = null; // 값이 변경될 때 lastNextResetTime을 null로 설정
-});
+
 
 // 버튼 클릭 시 데이터 가져오기 및 렌더링
 document.getElementById("fetchButton").addEventListener("click", async () => {
@@ -453,9 +449,10 @@ document.getElementById("serverSelect").addEventListener("change", function () {
 });
 
 // 채널 입력 필드에 이벤트 리스너 추가
-document.getElementById("channelInput").addEventListener("input", function () {
+document.getElementById("channelInput").addEventListener("change", function () {
   const channel = this.value; // 입력값 가져오기
   localStorage.setItem("channel", channel); // 로컬 스토리지에 저장
+
 });
 
 // RGB 색상 입력 필드에 이벤트 리스너 추가
