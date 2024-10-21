@@ -195,7 +195,7 @@ async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
   // 서버 데이터를 가져오고, 모달을 한 번에 업데이트
   for (let [serverName, serverCount] of Object.entries(serverObject)) {
     let itemNameList = createItemNameList(); // 새 리스트 구조 사용
-    console.log(itemNameList)
+    // console.log(itemNameList)
 
     let isChannelingServerChecked = document.getElementById("channelingServer").checked;
 
@@ -213,7 +213,7 @@ async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
       try {
         let items = await fetchLocationData(npc, serverName, serverNum, headers);
         items.forEach((item) => {
-          console.log(`item.color= ${JSON.stringify(hexcolor)}`)
+          // console.log(`item.color= ${JSON.stringify(hexcolor)}`)
           if (compareColors(item.colors, hexcolor)) {
             // 아이템 추가
             itemNameList.forEach((category) => {
