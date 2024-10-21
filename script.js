@@ -187,6 +187,7 @@ document.getElementById("apiKeyInput").addEventListener("input", function () {
 document.getElementById("serverSelect").addEventListener("change", function () {
   const server = this.value;
   localStorage.setItem("server", server);
+  lastNextResetTime = null;
 });
 
 document.getElementById("channelInput").addEventListener("change", function () {
