@@ -142,40 +142,42 @@ function compareColors(colors, hexColors) {
 
 //아이템리스트 리셋
 function resetItemNameList() {
-  itemNameList = {
-    작물: [
-      { "튼튼한 달걀 주머니": [] },
-      { "튼튼한 감자 주머니": [] },
-      { "튼튼한 옥수수 주머니": [] },
-      { "튼튼한 밀 주머니": [] },
-      { "튼튼한 보리 주머니": [] },
-    ],
-    방직: [
-      { "튼튼한 양털 주머니": [] },
-      { "튼튼한 거미줄 주머니": [] },
-      { "튼튼한 가는 실뭉치 주머니": [] },
-      { "튼튼한 굵은 실뭉치 주머니": [] },
-    ],
-    가죽: [
-      { "튼튼한 저가형 가죽 주머니": [] },
-      { "튼튼한 일반 가죽 주머니": [] },
-      { "튼튼한 고급 가죽 주머니": [] },
-      { "튼튼한 최고급 가죽 주머니": [] },
-    ],
-    옷감: [
-      { "튼튼한 저가형 옷감 주머니": [] },
-      { "튼튼한 일반 옷감 주머니": [] },
-      { "튼튼한 고급 옷감 주머니": [] },
-      { "튼튼한 최고급 옷감 주머니": [] },
-    ],
-    실크: [
-      { "튼튼한 저가형 실크 주머니": [] },
-      { "튼튼한 일반 실크 주머니": [] },
-      { "튼튼한 고급 실크 주머니": [] },
-      { "튼튼한 최고급 실크 주머니": [] },
-    ],
-    꽃바구니: [{ "튼튼한 꽃바구니": [] }],
-  };
+  itemNameList = JSON.parse(
+    JSON.stringify({
+      작물: [
+        { "튼튼한 달걀 주머니": [] },
+        { "튼튼한 감자 주머니": [] },
+        { "튼튼한 옥수수 주머니": [] },
+        { "튼튼한 밀 주머니": [] },
+        { "튼튼한 보리 주머니": [] },
+      ],
+      방직: [
+        { "튼튼한 양털 주머니": [] },
+        { "튼튼한 거미줄 주머니": [] },
+        { "튼튼한 가는 실뭉치 주머니": [] },
+        { "튼튼한 굵은 실뭉치 주머니": [] },
+      ],
+      가죽: [
+        { "튼튼한 저가형 가죽 주머니": [] },
+        { "튼튼한 일반 가죽 주머니": [] },
+        { "튼튼한 고급 가죽 주머니": [] },
+        { "튼튼한 최고급 가죽 주머니": [] },
+      ],
+      옷감: [
+        { "튼튼한 저가형 옷감 주머니": [] },
+        { "튼튼한 일반 옷감 주머니": [] },
+        { "튼튼한 고급 옷감 주머니": [] },
+        { "튼튼한 최고급 옷감 주머니": [] },
+      ],
+      실크: [
+        { "튼튼한 저가형 실크 주머니": [] },
+        { "튼튼한 일반 실크 주머니": [] },
+        { "튼튼한 고급 실크 주머니": [] },
+        { "튼튼한 최고급 실크 주머니": [] },
+      ],
+      꽃바구니: [{ "튼튼한 꽃바구니": [] }],
+    })
+  );
 }
 
 // 특정 location에 대해 서버별 상점 정보를 가져옴)
@@ -286,7 +288,7 @@ async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
         nonEmptyItems.forEach((entry) => {
           let itemName = Object.keys(entry)[0];
           let serverList = entry[itemName];
-          modalContent += `<p>${itemName} 서버: ${serverList.join(", ")}</p>`;
+          modalContent += `<p>${itemName}: ${serverList.join(", ")}</p>`;
         });
       }
 
@@ -296,6 +298,7 @@ async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
       });
 
       if (allItemsHaveServers) {
+        if (category!="꽃바구니"){
         modalContent += `<p class="set-check">${category} 세트 가능! (`;
         let setServer = [];
         itemNameList[category].forEach((item) => {
@@ -307,6 +310,7 @@ async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
 
         modalContent += `${setServer.join(", ")})</p>`;
       }
+    }
     });
     modalContent += '<hr style="color:gray;width:100%" />';
   }
