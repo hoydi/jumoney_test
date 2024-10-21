@@ -81,6 +81,7 @@
   padding: 20px;
   border-radius: 10px;
   width: 100%;
+  max-width: 1200px;
   
   box-sizing: border-box; /* 패딩이 크기에 영향을 주지 않도록 */
   max-height: 80vh;
@@ -93,6 +94,9 @@
   flex-direction: column;
   /* align-items: center; */
   justify-content: center;
+}
+#modal-body > *{
+ margin: 2px;
 }
 
       #modal-close {
@@ -121,7 +125,7 @@
   width: 100px;
   height: 100px;
   animation: spin 1s linear infinite;
-  margin: 20px auto;
+  margin: 20px auto !important;
 }
 
 /* 스피너 애니메이션 */

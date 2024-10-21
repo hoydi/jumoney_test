@@ -39,12 +39,10 @@ let serverObject = { 류트: 42, 하프: 24, 울프: 15, 만돌린: 15 };
 //     console.log(`${instrument}: ${value}`);
 // }
 
-
 ////////////////////////////////////////////////////////////// cell 에 클릭이벤트 넣기
 document.addEventListener("DOMContentLoaded", function () {
   let content = document.getElementById("content");
   let tooltip = document.getElementById("channeling-tooltip");
-
 
   content.addEventListener("click", function (event) {
     let cell = event.target.closest(".cell");
@@ -180,13 +178,8 @@ function resetItemNameList() {
   };
 }
 
-
 // 특정 location에 대해 서버별 상점 정보를 가져옴)
-async function fetchLocationByServers(
-  targetLocation,
-  hexcolor,
-  itemName
-) {
+async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
   let selectedServer = document.getElementById("serverSelect").value;
   modalBody.innerHTML = `
     <div class="spinner"></div>
@@ -210,7 +203,9 @@ async function fetchLocationByServers(
   }
 
   let npc = locationData.npc;
-  let modalContent = `<h2>${selectedServer} ${document.getElementById('channelInput').value} 채널 ${itemName}</h2>`;
+  let modalContent = `<h2>${selectedServer} ${
+    document.getElementById("channelInput").value
+  } 채널 ${itemName}</h2>`;
 
   // 미리 색상 관련 HTML을 준비
   modalContent += `<div class="modal-color">`;
@@ -301,9 +296,19 @@ async function fetchLocationByServers(
       });
 
       if (allItemsHaveServers) {
-        modalContent += `<p class="set-check">${category} 세트 가능!</p>`;
+        modalContent += `<p class="set-check">${category} 세트 가능! (`;
+        let setServer = [];
+        itemNameList[category].forEach((item) => {
+          const itemName = Object.keys(item)[0]; // 항목 이름 가져오기
+          const itemList = item[itemName]; // 해당 항목의 리스트 가져오기
+          const firstListItem = itemList[0]; // 리스트의 첫 번째 요소 가져오기
+          setServer.push(firstListItem);
+        });
+
+        modalContent += `${setServer.join(", ")})</p>`;
       }
     });
+    modalContent += '<hr style="color:gray;width:100%" />';
   }
 
   // 모든 데이터가 처리된 후 모달에 한 번에 업데이트
@@ -375,4 +380,3 @@ document.getElementById("serverSelect").addEventListener("change", function () {
   const tooltipText = document.getElementById("channelingTooltipText");
   tooltipText.textContent = `체크시 ${selectedServer} 서버만 채널링합니다`;
 });
-
