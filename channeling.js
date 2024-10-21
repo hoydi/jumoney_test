@@ -1,37 +1,3 @@
-let itemNameList = {
-  작물: [
-    { "튼튼한 달걀 주머니": [] },
-    { "튼튼한 감자 주머니": [] },
-    { "튼튼한 옥수수 주머니": [] },
-    { "튼튼한 밀 주머니": [] },
-    { "튼튼한 보리 주머니": [] },
-  ],
-  방직: [
-    { "튼튼한 양털 주머니": [] },
-    { "튼튼한 거미줄 주머니": [] },
-    { "튼튼한 가는 실뭉치 주머니": [] },
-    { "튼튼한 굵은 실뭉치 주머니": [] },
-  ],
-  가죽: [
-    { "튼튼한 저가형 가죽 주머니": [] },
-    { "튼튼한 일반 가죽 주머니": [] },
-    { "튼튼한 고급 가죽 주머니": [] },
-    { "튼튼한 최고급 가죽 주머니": [] },
-  ],
-  옷감: [
-    { "튼튼한 저가형 옷감 주머니": [] },
-    { "튼튼한 일반 옷감 주머니": [] },
-    { "튼튼한 고급 옷감 주머니": [] },
-    { "튼튼한 최고급 옷감 주머니": [] },
-  ],
-  실크: [
-    { "튼튼한 저가형 실크 주머니": [] },
-    { "튼튼한 일반 실크 주머니": [] },
-    { "튼튼한 고급 실크 주머니": [] },
-    { "튼튼한 최고급 실크 주머니": [] },
-  ],
-  꽃바구니: [{ "튼튼한 꽃바구니": [] }],
-};
 
 let serverObject = { 류트: 42, 하프: 24, 울프: 15, 만돌린: 15 };
 // let serverObject = {류트: 42};
@@ -68,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (userConfirmation) {
           // 사용자가 확인을 눌렀을 때 실행할 코드
-          let fatchData = fetchLocationByServers(
+          fetchLocationByServers(
             locationName,
             convertRgbToHex(colors),
             itemName
@@ -135,59 +101,64 @@ function convertRgbToHex(rgbStrings) {
 // 색상 비교 함수
 function compareColors(colors, hexColors) {
   // colors 객체의 값들을 소문자로 변환하여 hexColors 배열과 비교
-  return Object.values(colors).some((color) =>
-    hexColors.map((h) => h.toLowerCase()).includes(color.toLowerCase())
+  return Object.values(colors).every((color,index) =>
+    color.toLowerCase() === hexColors[index].toLowerCase()
   );
 }
+//compareColors 가 some 을 써서 하나라도 같으면 참을 return 해서 같은 교역소에 겹치는 값이 있으면 여러개가 중복됐던것...
 
 //아이템리스트 리셋
-function resetItemNameList() {
-  itemNameList = JSON.parse(
-    JSON.stringify({
-      작물: [
-        { "튼튼한 달걀 주머니": [] },
-        { "튼튼한 감자 주머니": [] },
-        { "튼튼한 옥수수 주머니": [] },
-        { "튼튼한 밀 주머니": [] },
-        { "튼튼한 보리 주머니": [] },
-      ],
-      방직: [
-        { "튼튼한 양털 주머니": [] },
-        { "튼튼한 거미줄 주머니": [] },
-        { "튼튼한 가는 실뭉치 주머니": [] },
-        { "튼튼한 굵은 실뭉치 주머니": [] },
-      ],
-      가죽: [
-        { "튼튼한 저가형 가죽 주머니": [] },
-        { "튼튼한 일반 가죽 주머니": [] },
-        { "튼튼한 고급 가죽 주머니": [] },
-        { "튼튼한 최고급 가죽 주머니": [] },
-      ],
-      옷감: [
-        { "튼튼한 저가형 옷감 주머니": [] },
-        { "튼튼한 일반 옷감 주머니": [] },
-        { "튼튼한 고급 옷감 주머니": [] },
-        { "튼튼한 최고급 옷감 주머니": [] },
-      ],
-      실크: [
-        { "튼튼한 저가형 실크 주머니": [] },
-        { "튼튼한 일반 실크 주머니": [] },
-        { "튼튼한 고급 실크 주머니": [] },
-        { "튼튼한 최고급 실크 주머니": [] },
-      ],
-      꽃바구니: [{ "튼튼한 꽃바구니": [] }],
-    })
-  );
+function createItemNameList() {
+  return [
+    // 작물
+    [
+      ["튼튼한 달걀 주머니", []],
+      ["튼튼한 감자 주머니", []],
+      ["튼튼한 옥수수 주머니", []],
+      ["튼튼한 밀 주머니", []],
+      ["튼튼한 보리 주머니", []],
+    ],
+    // 방직
+    [
+      ["튼튼한 양털 주머니", []],
+      ["튼튼한 거미줄 주머니", []],
+      ["튼튼한 가는 실뭉치 주머니", []],
+      ["튼튼한 굵은 실뭉치 주머니", []],
+    ],
+    // 가죽
+    [
+      ["튼튼한 저가형 가죽 주머니", []],
+      ["튼튼한 일반 가죽 주머니", []],
+      ["튼튼한 고급 가죽 주머니", []],
+      ["튼튼한 최고급 가죽 주머니", []],
+    ],
+    // 옷감
+    [
+      ["튼튼한 저가형 옷감 주머니", []],
+      ["튼튼한 일반 옷감 주머니", []],
+      ["튼튼한 고급 옷감 주머니", []],
+      ["튼튼한 최고급 옷감 주머니", []],
+    ],
+    // 실크
+    [
+      ["튼튼한 저가형 실크 주머니", []],
+      ["튼튼한 일반 실크 주머니", []],
+      ["튼튼한 고급 실크 주머니", []],
+      ["튼튼한 최고급 실크 주머니", []],
+    ],
+    // 꽃바구니
+    [
+      ["튼튼한 꽃바구니", []],
+    ],
+  ];
 }
+
 
 // 특정 location에 대해 서버별 상점 정보를 가져옴)
 async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
+
   let selectedServer = document.getElementById("serverSelect").value;
-  modalBody.innerHTML = `
-    <div class="spinner"></div>
-    
-  `;
-  modal.style.display = "flex";
+  modalBody.innerHTML = `<div class="spinner"></div>`;
   modal.style.display = "flex"; // 모달 띄우기
   console.log(`colors : ${hexcolor}`);
   let resultList = [];
@@ -205,9 +176,7 @@ async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
   }
 
   let npc = locationData.npc;
-  let modalContent = `<h2>${selectedServer} ${
-    document.getElementById("channelInput").value
-  } 채널 ${itemName}</h2>`;
+  let modalContent = `<h2>${selectedServer} ${document.getElementById("channelInput").value} 채널 ${itemName}</h2>`;
 
   // 미리 색상 관련 HTML을 준비
   modalContent += `<div class="modal-color">`;
@@ -225,99 +194,73 @@ async function fetchLocationByServers(targetLocation, hexcolor, itemName) {
 
   // 서버 데이터를 가져오고, 모달을 한 번에 업데이트
   for (let [serverName, serverCount] of Object.entries(serverObject)) {
-    let isChannelingServerChecked =
-      document.getElementById("channelingServer").checked;
+    let itemNameList = createItemNameList(); // 새 리스트 구조 사용
+    console.log(itemNameList)
+
+    let isChannelingServerChecked = document.getElementById("channelingServer").checked;
 
     if (isChannelingServerChecked) {
-      // 체크된 경우 serverSelect의 value를 읽어옴
-
-      // 선택된 서버 이름을 출력하거나 다른 작업을 수행
-      console.log(
-        `체크박스가 체크되었습니다. 선택된 서버: ${selectedServer} 현재서버: ${serverName}`
-      );
       if (selectedServer != serverName) {
         continue;
       }
     }
 
-    resetItemNameList();
     modalContent += `<div class="serverName"><h2>${serverName}</h2></div>`;
 
     for (let serverNum = 1; serverNum <= serverCount; serverNum++) {
       if (serverNum === 11) continue;
 
       try {
-        // 비동기 데이터 fetch
-        let items = await fetchLocationData(
-          npc,
-          serverName,
-          serverNum,
-          headers
-        );
-
+        let items = await fetchLocationData(npc, serverName, serverNum, headers);
         items.forEach((item) => {
+          console.log(`item.color= ${JSON.stringify(hexcolor)}`)
           if (compareColors(item.colors, hexcolor)) {
-            Object.keys(itemNameList).forEach((category) => {
-              itemNameList[category].forEach((entry) => {
-                let itemName = Object.keys(entry)[0];
-                if (item.itemDisplayName === itemName) {
-                  entry[item.itemDisplayName].push(serverNum); // 서버 번호 추가
+            // 아이템 추가
+            itemNameList.forEach((category) => {
+              category.forEach((entry) => {
+                let itemNameKey = entry[0];
+                if (item.itemDisplayName === itemNameKey) {
+                  entry[1].push(serverNum); // 서버 번호 추가
                 }
               });
             });
           }
         });
       } catch (error) {
-        console.error(
-          `Error fetching data for server ${serverName} ${serverNum}:`,
-          error
-        );
+        console.error(`Error fetching data for server ${serverName} ${serverNum}:`, error);
         displayError(error);
       }
     }
 
     // 각 카테고리별로 모달에 데이터 추가
-    Object.keys(itemNameList).forEach((category) => {
-      let nonEmptyItems = itemNameList[category].filter((entry) => {
-        let itemName = Object.keys(entry)[0];
-        return entry[itemName].length > 0;
-      });
+    itemNameList.forEach((category) => {
+      let nonEmptyItems = category.filter(entry => entry[1].length > 0);
 
       if (nonEmptyItems.length > 0) {
-        modalContent += `<h3>${category}</h3>`;
-        nonEmptyItems.forEach((entry) => {
-          let itemName = Object.keys(entry)[0];
-          let serverList = entry[itemName];
+        modalContent += `<h3>${category[0][0]}</h3>`; // 카테고리 이름
+        nonEmptyItems.forEach(entry => {
+          let itemName = entry[0];
+          let serverList = entry[1];
           modalContent += `<p>${itemName}: ${serverList.join(", ")}</p>`;
         });
       }
 
-      let allItemsHaveServers = itemNameList[category].every((entry) => {
-        let itemName = Object.keys(entry)[0];
-        return entry[itemName].length > 0;
-      });
-
-      if (allItemsHaveServers) {
-        if (category!="꽃바구니"){
-        modalContent += `<p class="set-check">${category} 세트 가능! (`;
+      let allItemsHaveServers = category.every(entry => entry[1].length > 0);
+      if (allItemsHaveServers && category[0][0] !== "튼튼한 꽃바구니") {
+        modalContent += `<p class="set-check">${category[0][0]} 세트 가능! (`;
         let setServer = [];
-        itemNameList[category].forEach((item) => {
-          const itemName = Object.keys(item)[0]; // 항목 이름 가져오기
-          const itemList = item[itemName]; // 해당 항목의 리스트 가져오기
-          const firstListItem = itemList[0]; // 리스트의 첫 번째 요소 가져오기
-          setServer.push(firstListItem);
+        category.forEach(item => {
+          setServer.push(item[1][0]); // 첫 번째 서버만 추가
         });
-
         modalContent += `${setServer.join(", ")})</p>`;
       }
-    }
     });
+
     modalContent += '<hr style="color:gray;width:100%" />';
   }
 
   // 모든 데이터가 처리된 후 모달에 한 번에 업데이트
   showModal(modalContent);
-  return resultList;
 }
 
 // 모달 관련 변수
