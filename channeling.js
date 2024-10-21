@@ -60,16 +60,19 @@ document.addEventListener("DOMContentLoaded", function () {
           .closest(".location")
           .querySelector(".location_name").textContent;
 
-        alert(
+        let userConfirmation = confirm(
           `${locationName} ${itemName}${colors.map((color) =>
             color.replace("rgb", "")
           )} 기준으로 채널링하시겠습니까?`
         );
 
-        let fatchData = fetchLocationByServers(
-          locationName,
-          convertRgbToHex(colors)
-        );
+        if (userConfirmation) {
+          // 사용자가 확인을 눌렀을 때 실행할 코드
+          let fatchData = fetchLocationByServers(
+            locationName,
+            convertRgbToHex(colors)
+          );
+        }
       }
     }
   });
@@ -114,7 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
 //rgb 를 hex로
 function convertRgbToHex(rgbStrings) {
   return rgbStrings.map((rgbStr) => {
@@ -149,6 +151,11 @@ function resetItemNameList() {
 
 // 특정 location에 대해 서버별 상점 정보를 가져옴)
 async function fetchLocationByServers(targetLocation, hexcolor) {
+  modalBody.innerHTML = `
+    <div class="spinner"></div>
+    
+  `;
+  modal.style.display = "flex";
   modal.style.display = "flex"; // 모달 띄우기
   console.log(`colors : ${hexcolor}`);
   let resultList = [];
@@ -184,6 +191,20 @@ async function fetchLocationByServers(targetLocation, hexcolor) {
 
   // 서버 데이터를 가져오고, 모달을 한 번에 업데이트
   for (let [serverName, serverCount] of Object.entries(serverObject)) {
+    let isChannelingServerChecked = document.getElementById("channelingServer").checked;
+  
+  if (isChannelingServerChecked) {
+    // 체크된 경우 serverSelect의 value를 읽어옴
+    let selectedServer = document.getElementById("serverSelect").value;
+    
+    // 선택된 서버 이름을 출력하거나 다른 작업을 수행
+    console.log(`체크박스가 체크되었습니다. 선택된 서버: ${selectedServer} 현재서버: ${serverName}`);
+    if(selectedServer!=serverName){
+      continue;
+    }
+    
+  }
+
     resetItemNameList();
     modalContent += `<div class="serverName"><h2>${serverName}</h2></div>`;
 
@@ -192,7 +213,12 @@ async function fetchLocationByServers(targetLocation, hexcolor) {
 
       try {
         // 비동기 데이터 fetch
-        let items = await fetchLocationData(npc, serverName, serverNum, headers);
+        let items = await fetchLocationData(
+          npc,
+          serverName,
+          serverNum,
+          headers
+        );
 
         items.forEach((item) => {
           if (compareColors(item.colors, hexcolor)) {
@@ -207,7 +233,10 @@ async function fetchLocationByServers(targetLocation, hexcolor) {
           }
         });
       } catch (error) {
-        console.error(`Error fetching data for server ${serverName} ${serverNum}:`, error);
+        console.error(
+          `Error fetching data for server ${serverName} ${serverNum}:`,
+          error
+        );
         displayError(error);
       }
     }
@@ -244,7 +273,6 @@ async function fetchLocationByServers(targetLocation, hexcolor) {
   return resultList;
 }
 
-
 // 모달 관련 변수
 let modal = document.getElementById("modal");
 let modalClose = document.getElementById("modal-close");
@@ -252,20 +280,21 @@ let modalBody = document.getElementById("modal-body");
 
 // 모달 닫기
 modalClose.addEventListener("click", function () {
-  modalBody.innerHTML="";
+  modalBody.innerHTML = "";
   modal.style.display = "none"; // 모달 숨기기
 });
 
 // 페이지 클릭 외부에서 모달 닫기
 window.addEventListener("click", function (event) {
   if (event.target === modal) {
-    modalBody.innerHTML="";
+    modalBody.innerHTML = "";
     modal.style.display = "none"; // 모달 숨기기
   }
 });
 
 // 아이템리스트 출력 함수
 function showModal(content) {
+  modalBody.innerHTML = "";
   modalBody.innerHTML = content; // 모달에 내용 넣기
 }
 
@@ -282,3 +311,36 @@ document
     // 모달 창을 표시
     document.getElementById("modal").style.display = "block";
   });
+
+
+  // 특정 서버만 채널링할건지 체크 확인
+  document.getElementById("channelingServer").addEventListener("change", function () {
+    // 체크박스가 체크되었을 때
+    if (this.checked) {
+      // serverSelect의 value 값을 읽어옴
+      let selectedServer = document.getElementById("serverSelect").value;
+      
+      // 선택된 서버 이름 출력 (또는 원하는 동작 수행)
+      console.log("Selected Server:", selectedServer);
+  
+      // 필터링 등의 추가 동작을 수행할 수 있습니다.
+      // applyServerFilter(selectedServer);
+    }
+  });
+
+  document.getElementById('serverSelect').addEventListener('change', function () {
+    // serverSelect에서 선택된 값을 가져오기
+    const selectedServer = this.value;
+    
+    // tooltiptext를 업데이트
+    const tooltipText = document.getElementById('channelingTooltipText');
+    tooltipText.textContent = `체크시 ${selectedServer} 서버만 채널링합니다`;
+  });
+  
+  // 페이지 로드 시 선택된 서버 값을 미리 설정
+  window.onload = function() {
+    const selectedServer = document.getElementById('serverSelect').value;
+    const tooltipText = document.getElementById('channelingTooltipText');
+    tooltipText.textContent = `체크시 현재 서버인 ${selectedServer} 서버만 채널링합니다`;
+  };
+  

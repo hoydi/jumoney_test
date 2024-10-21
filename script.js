@@ -174,6 +174,8 @@ window.onload = function () {
   if (storedTolerance) {
     document.getElementById("toleranceInput").value = storedTolerance;
   }
+
+
 };
 
 document.getElementById("apiKeyInput").addEventListener("input", function () {
