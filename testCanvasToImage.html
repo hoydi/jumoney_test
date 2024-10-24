@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랜덤 색의 Canvas와 이미지</title>
+</head>
+<body>
+    <div id="canvasContainer"></div>
+
+    <script>
+        const canvasContainer = document.getElementById('canvasContainer');
+
+        for (let i = 0; i < 10; i++) {
+            // Canvas 요소 생성
+            const canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+
+            const ctx = canvas.getContext('2d');
+
+            // 랜덤 색 생성
+            const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+            ctx.fillStyle = randomColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Canvas를 이미지로 변환
+            const dataURL = canvas.toDataURL('image/png');
+
+            // 이미지 요소 생성
+            const img = document.createElement('img');
+            img.src = dataURL;
+            img.alt = `Canvas ${i + 1}`;
+
+            // Canvas와 이미지 추가
+            // canvasContainer.appendChild(canvas);
+            canvasContainer.appendChild(img);
+        }
+    </script>
+</body>
+</html>
+

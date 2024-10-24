@@ -1,140 +1,207 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas Color Overlay</title>
     <style>
-        canvas {
-            border: 1px solid black;
-        }
+      canvas {
+        border: 1px solid black;
+      }
     </style>
-</head>
-<body>
-    <canvas id="canvas" width="43" height="45"></canvas>
-    <!-- <img id="image1" src="./pouch/silk/실크-베이스.png" style="display:none;">
-    <img id="image2" src="./pouch/silk/실크-안감.png" style="display:none;">
-    <img id="image3" src="./pouch/silk/실크-겉감.png" style="display:none;">
-    <img id="image4" src="./pouch/silk/실크-라이트.png" style="display:none;"> -->
-
-    <!-- <img id="image1" src="./pouch/fabric/최고급-베이스.png" style="display:none;">
-    <img id="image2" src="./pouch/fabric/최고급-안감.png" style="display:none;">
-    <img id="image3" src="./pouch/fabric/최고급-겉감.png" style="display:none;">
-    <img id="image4" src="./pouch/fabric/최고급-라이트.png" style="display:none;"> -->
-
-    <img id="image1" src="./pouch/leather/가죽-베이스.png" style="display:none;">
-    <img id="image2" src="./pouch/leather/가죽-안감.png" style="display:none;">
-    <img id="image3" src="./pouch/leather/가죽-겉감.png" style="display:none;">
-    <img id="image4" src="./pouch/leather/가죽-라이트.png" style="display:none;">
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
 
     <script>
-        
-        // 'rgb(206, 179, 165)' 형식의 문자열에서 숫자 추출
-        function rgbStringToObject(colorRgb) {
-            const rgbValues = colorRgb.match(/\d+/g);
-            return {
-                r: parseInt(rgbValues[0], 10),
-                g: parseInt(rgbValues[1], 10),
-                b: parseInt(rgbValues[2], 10)
-            };
+      // 'rgb(206, 179, 165)' 형식의 문자열에서 숫자 추출
+      function rgbStringToObject(colorRgb) {
+        const rgbValues = colorRgb.match(/\d+/g);
+        return {
+          r: parseInt(rgbValues[0], 10),
+          g: parseInt(rgbValues[1], 10),
+          b: parseInt(rgbValues[2], 10),
+        };
+      }
+
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // 이미지 경로 배열
+      const imageSources = [
+        "./pouch/leather/leather_base.png",
+        "./pouch/leather/leather_in.png",
+        "./pouch/leather/leather_out.png",
+        "./pouch/leather/leather_light.png",
+        "./pouch/mark.png",
+      ];
+      const romanSources = [
+        "./pouch/leather/fine_roman1.png",
+        "./pouch/leather/fine_roman2.png",
+        "./pouch/leather/fine_roman3.png",
+      ];
+
+      // 이미지를 저장할 배열
+      const images = [];
+      let imagesLoaded = 0;
+      const totalImages = imageSources.length;
+
+      // 이미지 로딩 완료 시 호출되는 함수
+      function imageLoaded() {
+        imagesLoaded++;
+        if (imagesLoaded === totalImages) {
+          canvas.width = images[0].width;
+          canvas.height = images[0].height;
+          drawImages();
+        }
+      }
+
+      // 이미지 로드
+      imageSources.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = imageLoaded;
+        images.push(img);
+      });
+
+      function applyColorToWhitePixels(image, color) {
+        const tempCanvas = document.createElement("canvas");
+        const tempCtx = tempCanvas.getContext("2d");
+        tempCanvas.width = image.width;
+        tempCanvas.height = image.height;
+
+        // 이미지 그리기
+        tempCtx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        // 픽셀 데이터를 가져옴
+        const imageData = tempCtx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        const data = imageData.data;
+
+        // 투명도를 제외한 흰색 픽셀에 색 입히기
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const alpha = data[i + 3];
+
+          // 완전한 흰색인 경우 (RGB가 255이고 투명도가 있는 픽셀)
+          if (r === 255 && g === 255 && b === 255 && alpha > 0) {
+            data[i] = color.r; // R
+            data[i + 1] = color.g; // G
+            data[i + 2] = color.b; // B
+          }
         }
 
+        // 색상이 입혀진 데이터를 다시 캔버스에 적용
+        tempCtx.putImageData(imageData, 0, 0);
+        return tempCanvas;
+      }
 
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+      // 이미지를 그리는 함수
+      function drawImages() {
+        ctx.globalCompositeOperation = "multiply";
+        ctx.drawImage(images[0], 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(images[0], 0, 0, canvas.width, canvas.height);
 
-        const image1 = document.getElementById('image1');
-        const image2 = document.getElementById('image2');
-        const image3 = document.getElementById('image3');
-        const image4 = document.getElementById('image4');
+        const blueOverlay = applyColorToWhitePixels(images[2], {
+          r: 166,
+          g: 106,
+          b: 29,
+        });
+        ctx.drawImage(blueOverlay, 0, 0, canvas.width, canvas.height);
 
-        // 이미지 로딩 완료 시 호출되는 함수
-        let imagesLoaded = 0;
-        const totalImages = 4;
+        const redOverlay = applyColorToWhitePixels(images[1], {
+          r: 207,
+          g: 194,
+          b: 203,
+        });
+        ctx.drawImage(redOverlay, 0, 0, canvas.width, canvas.height);
 
-        function imageLoaded() {
-            imagesLoaded++;
-            if (imagesLoaded === totalImages) {
-                canvas.width = image1.width;
-        canvas.height = image1.height;
-                drawImages();
-            }
+        ctx.globalCompositeOperation = "lighter";
+        ctx.drawImage(images[3], 0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1.0;
+
+        // mark.png 그리기 (가장 위에)
+        ctx.globalCompositeOperation = "source-over"; // 기본 모드로 되돌림
+        const markImage = images[4];
+        const markX = 1; // 왼쪽에서 1px 떨어진 위치
+        const markY = canvas.height - markImage.height - 2; // 아래에서 2px 떨어진 위치
+        ctx.drawImage(
+          markImage,
+          markX,
+          markY,
+          markImage.width,
+          markImage.height
+        );
+        ctx.globalAlpha = 1.0;
+
+        // romanSources 이미지 로드 및 그리기
+        const romanImages = [];
+        let romanImagesLoaded = 0;
+        const totalRomanImages = romanSources.length;
+
+        function romanImageLoaded() {
+          romanImagesLoaded++;
+          if (romanImagesLoaded === totalRomanImages) {
+            drawRomanImages();
+          }
         }
 
-        // 이미지가 로드되면 호출
-        image1.onload = imageLoaded;
-        image2.onload = imageLoaded;
-        image3.onload = imageLoaded;
-        image4.onload = imageLoaded;
+        romanSources.forEach((src) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = romanImageLoaded;
+          romanImages.push(img);
+        });
 
-        function applyColorToWhitePixels(image, color) {
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCanvas.width = image.width;
-            tempCanvas.height = image.height;
+        function drawRomanImages() {
+    // fine_roman3 (표준)
+    const coloredRoman3 = applyColorToWhitePixels(romanImages[2], {
+        r: 255, // 원하는 색상 값을 입력하세요
+        g: 0,
+        b: 0,
+    });
 
-            // 이미지 그리기
-            tempCtx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = "source-over"; // 기본 모드
+    ctx.drawImage(
+        coloredRoman3,
+        0,
+        0,
+        romanImages[2].width,
+        romanImages[2].height
+    );
 
-            // 픽셀 데이터를 가져옴
-            const imageData = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
+    // fine_roman2 (빼기)
+    ctx.globalCompositeOperation = "lighter";
+    ctx.drawImage(
+        romanImages[1],
+        0,
+        0,
+        romanImages[1].width,
+        romanImages[1].height
+    );
 
-            // 투명도를 제외한 흰색 픽셀에 색 입히기
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const alpha = data[i + 3];
+    // fine_roman1 (선형닷지)
+    ctx.globalCompositeOperation = "darker"; // 또는 다른 적절한 블렌딩 모드
+    ctx.drawImage(  
+        romanImages[0],
+        0,
+        0,
+        romanImages[0].width,
+        romanImages[0].height
+    );
 
-                // 완전한 흰색인 경우 (RGB가 255이고 투명도가 있는 픽셀)
-                if (r === 255 && g === 255 && b === 255 && alpha > 0) {
-                    data[i] = color.r;      // R
-                    data[i + 1] = color.g;  // G
-                    data[i + 2] = color.b;  // B
-                }
-            }
+    // 원래 모드로 되돌리기
+    ctx.globalCompositeOperation = "source-over";
+}
 
-            // 색상이 입혀진 데이터를 다시 캔버스에 적용
-            tempCtx.putImageData(imageData, 0, 0);
-            return tempCanvas;
-        }
-
-        // 이미지를 그리는 함수
-        function drawImages() {
-
-            ctx.globalCompositeOperation = 'multiply';
-            ctx.drawImage(image1, 0, 0, canvas.width, canvas.height);
-            //ctx.globalCompositeOperation = 'overlay'
-            ctx.drawImage(image1, 0, 0, canvas.width, canvas.height);
-
-            ctx.filter = 'saturate(120%)';
-            //const blueOverlay = applyColorToWhitePixels(image3, { r: 212, g: 132, b: 137 });
-            //const blueOverlay = applyColorToWhitePixels(image3, { r: 115, g: 0, b: 0 });
-            //const blueOverlay = applyColorToWhitePixels(image3, { r: 255, g: 255, b: 255 });
-            const blueOverlay = applyColorToWhitePixels(image3, { r: 140, g: 125, b: 176 });
-            //const blueOverlay = applyColorToWhitePixels(image3, { r: 0, g: 0, b: 0 });
-           
-            ctx.drawImage(blueOverlay, 0, 0, canvas.width, canvas.height);
-            
-            //ctx.filter = 'none';
-            //const redOverlay = applyColorToWhitePixels(image2, { r: 141, g: 117, b: 180 });
-            //const redOverlay = applyColorToWhitePixels(image2, { r: 0, g: 0, b: 0 });
-            //const redOverlay = applyColorToWhitePixels(image2, { r: 194, g: 178, b: 231 });
-            const redOverlay = applyColorToWhitePixels(image2, { r: 255, g: 255, b: 255 });
-            //const redOverlay = applyColorToWhitePixels(image2, { r: 194, g: 178, b: 231 });
-                        
-            ctx.drawImage(redOverlay, 0, 0, canvas.width, canvas.height);
-
-
-            ctx.globalCompositeOperation = 'lighter';
-            ctx.filter = 'brightness(100%)';
-            ctx.drawImage(image4, 0, 0, canvas.width, canvas.height);
-            // 블렌딩 모드를 기본값으로 되돌림
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.globalAlpha = 1.0;
-        }
-
+      }
     </script>
-</body>
+  </body>
 </html>

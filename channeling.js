@@ -352,7 +352,7 @@ document
     modalBody.innerHTML = `<img src="${imageUrl}" alt="Key Generation Method" style="width:100%;max-width:100%;">`;
 
     // 모달 창을 표시
-    document.getElementById("modal").style.display = "block";
+    document.getElementById("modal").style.display = "flex";
   });
 
 // 특정 서버만 채널링할건지 체크 확인
